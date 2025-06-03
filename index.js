@@ -1,10 +1,27 @@
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers, // já tens
+    GatewayIntentBits.GuildMessageReactions, // opcional, mas útil
+    GatewayIntentBits.GuildMessageTyping, // opcional
+    GatewayIntentBits.GuildVoiceStates, // opcional
+    GatewayIntentBits.GuildPresences, // opcional
+    GatewayIntentBits.GuildModeration, // opcional
+    GatewayIntentBits.GuildEmojisAndStickers, // opcional
+    GatewayIntentBits.GuildIntegrations, // opcional
+    GatewayIntentBits.GuildWebhooks, // opcional
+    GatewayIntentBits.GuildInvites, // opcional
+    GatewayIntentBits.GuildScheduledEvents, // opcional
+    GatewayIntentBits.AutoModerationConfiguration, // opcional
+    GatewayIntentBits.AutoModerationExecution // opcional
+  ]
 });
 
 const deployInfoPath = path.join(__dirname, 'json', 'last_deploy.json');
@@ -45,6 +62,51 @@ client.once('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
+  // Handler para o botão de registro
+  if (interaction.isButton() && interaction.customId === 'register_student') {
+    const studentRole = interaction.guild.roles.cache.find(r => r.name === 'Student');
+    if (!studentRole) return interaction.reply({ content: '❌ Student role not found.', ephemeral: true });
+
+    let hasRole = interaction.member.roles.cache.has(studentRole.id);
+
+    // Alterna o cargo
+    if (hasRole) {
+      await interaction.member.roles.remove(studentRole);
+      await interaction.reply({ content: '❌ Student role removed. You no longer have access to the study channels.', ephemeral: true });
+    } else {
+      await interaction.member.roles.add(studentRole);
+      await interaction.reply({ content: '✅ Student role added! You now have access to the study channels.', ephemeral: true });
+    }
+
+    // Atualiza o botão, título e descrição do embed
+    const newLabel = hasRole ? 'Get Student Role' : 'Remove Student Role';
+    const newStyle = hasRole ? ButtonStyle.Success : ButtonStyle.Danger;
+    const newTitle = hasRole ? '📝 Register as Student' : '❌ Remove Student Role';
+    const newDescription = hasRole
+      ? 'Click the button below to get access to the study channels!'
+      : 'Click the button below to remove your access to the study channels.';
+
+    const regEmbed = new EmbedBuilder()
+      .setTitle(newTitle)
+      .setDescription(newDescription)
+      .setColor(0x57F287);
+
+    const regRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('register_student')
+        .setLabel(newLabel)
+        .setStyle(newStyle)
+    );
+
+    try {
+      await interaction.message.edit({ embeds: [regEmbed], components: [regRow] });
+    } catch (e) {
+      // Ignora se não conseguir editar (por exemplo, se não for a mensagem original)
+    }
+    return;
+  }
+
+  // Handler para comandos slash
   if (!interaction.isChatInputCommand()) return;
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
