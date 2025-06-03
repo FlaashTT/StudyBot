@@ -8,7 +8,10 @@ module.exports = {
   async execute(interaction) {
     const guild = interaction.guild;
     const member = interaction.member;
-    const categoryName = 'School Tickets'; // Categoria onde os tickets serão criados
+    const categoryName = 'School Tickets';
+
+    // Busca o cargo Staff
+    const staffRole = guild.roles.cache.find(r => r.name === 'Staff');
 
     // Verificar se a categoria existe
     let category = guild.channels.cache.find(c => c.name === categoryName && c.type === ChannelType.GuildCategory);
@@ -19,7 +22,7 @@ module.exports = {
       });
     }
 
-    // Verificar se o utilizador já tem um ticket aberto (canal com o nome user-<id>)
+    // Verificar se o utilizador já tem um ticket aberto
     const existingChannel = guild.channels.cache.find(c =>
       c.name === `ticket-${member.user.username.toLowerCase()}-${member.id}` && c.parentId === category.id
     );
@@ -27,27 +30,33 @@ module.exports = {
       return interaction.reply({ content: '❌ You already have an open ticket.', ephemeral: true });
     }
 
+    // Permissões do canal
+    const permissionOverwrites = [
+      {
+        id: guild.roles.everyone,
+        deny: [PermissionFlagsBits.ViewChannel],
+      },
+      {
+        id: member.id,
+        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
+      }
+    ];
+    if (staffRole) {
+      permissionOverwrites.push({
+        id: staffRole.id,
+        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
+      });
+    }
+
     // Criar o canal do ticket
     const ticketChannel = await guild.channels.create({
       name: `ticket-${member.user.username.toLowerCase()}-${member.id}`,
       type: ChannelType.GuildText,
       parent: category.id,
-      permissionOverwrites: [
-        {
-          id: guild.roles.everyone,
-          deny: [PermissionFlagsBits.ViewChannel],
-        },
-        {
-          id: member.id,
-          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
-        },
-        // Aqui podes adicionar o cargo da equipa de apoio, por exemplo:
-        // { id: 'ID_DO_CARGO_DA_EQUIPA', allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages] }
-      ],
+      permissionOverwrites
     });
 
     await ticketChannel.send(`Hello ${member}, please describe your question or issue here. A member of the support team will assist you soon.`);
-
     interaction.reply({ content: `✅ Your ticket has been created: ${ticketChannel}`, ephemeral: true });
   },
 
@@ -58,6 +67,9 @@ module.exports = {
     const categoryName = 'School Tickets';
 
     if (!guild) return message.reply('❌ This command can only be used in a server.');
+
+    // Busca o cargo Staff
+    const staffRole = guild.roles.cache.find(r => r.name === 'Staff');
 
     // Verificar se a categoria existe
     let category = guild.channels.cache.find(c => c.name === categoryName && c.type === ChannelType.GuildCategory);
@@ -76,22 +88,30 @@ module.exports = {
       return message.reply('❌ You already have an open ticket.');
     }
 
+    // Permissões do canal
+    const permissionOverwrites = [
+      {
+        id: guild.roles.everyone,
+        deny: [PermissionFlagsBits.ViewChannel],
+      },
+      {
+        id: member.id,
+        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
+      }
+    ];
+    if (staffRole) {
+      permissionOverwrites.push({
+        id: staffRole.id,
+        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
+      });
+    }
+
     // Criar o canal do ticket
     const ticketChannel = await guild.channels.create({
       name: `ticket-${member.user.username.toLowerCase()}-${member.id}`,
       type: ChannelType.GuildText,
       parent: category.id,
-      permissionOverwrites: [
-        {
-          id: guild.roles.everyone,
-          deny: [PermissionFlagsBits.ViewChannel],
-        },
-        {
-          id: member.id,
-          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
-        },
-        // Adiciona aqui cargos de staff se quiseres
-      ],
+      permissionOverwrites
     });
 
     await ticketChannel.send(`Hello ${member}, please describe your question or issue here. A member of the support team will assist you soon.`);
