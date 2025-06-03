@@ -1,25 +1,29 @@
-# StudyBot
+# 🤖 StudyBot
 
 A Discord bot to help with studying, featuring commands for FAQs, notes, tasks, reminders, quizzes, tickets, and resources.
 
-## Features
+---
 
-- **FAQ Commands:** Add, remove, list, and search frequently asked questions.
-- **Notes:** Save, read, delete, and list personal notes.
-- **Tasks:** Add, list, and mark study tasks as completed.
-- **Reminders:** Create, list, and cancel reminders.
-- **Resources:** Save and view links, videos, PDFs, and summaries.
-- **Tickets:** Support ticket system.
-- **Quizzes:** Quick questions to test your knowledge.
-- **Prefix and Slash Commands:** Use commands like `/help` or `!help`.
+## ✨ Features
 
-## Installation
+- ❓ **FAQ Commands:** Add, remove, list, and search frequently asked questions.  
+- 📝 **Notes:** Save, read, delete, and list personal notes.  
+- ✅ **Tasks:** Add, list, and mark study tasks as completed.  
+- ⏰ **Reminders:** Create, list, and cancel reminders.  
+- 📚 **Resources:** Save and view links, videos, PDFs, and summaries.  
+- 🎫 **Tickets:** Support ticket system.  
+- 🧠 **Quizzes:** Quick questions to test your knowledge.  
+- 🧩 **Prefix and Slash Commands:** Use commands like `/help` or `!help`.
+
+---
+
+## ⚙️ Installation
 
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/FlaashTT/StudyBot.git
    cd StudyBot
-   ```
+
 
 2. **Install dependencies:**
    ```sh
@@ -49,18 +53,17 @@ A Discord bot to help with studying, featuring commands for FAQs, notes, tasks, 
    node index.js
    ```
 
-## Usage Examples
+## 💡 Usage Examples
+- /help or !help — 📋 List all available commands
+- /faq_add or !faq_add <question> <answer> — ❓ Add a FAQ entry
+- /note_add or !note_add <title> <content> — 📝 Add a note
+- /addtask or !addtask <description> — ✅ Add a study task
 
-- `/help` or `!help` — List all available commands.
-- `/faq_add` or `!faq_add <question> <answer>` — Add a FAQ entry.
-- `/note_add` or `!note_add <title> <content>` — Add a note.
-- `/addtask` or `!addtask <description>` — Add a study task.
-
-## Contributing
+## 🤝 Contributing
 
 Pull requests are welcome!  
 Feel free to open issues for suggestions or improvements.
 
-## License
+## 📄 License
 
 This project is licensed under the Node.js license (see LICENSE file).
