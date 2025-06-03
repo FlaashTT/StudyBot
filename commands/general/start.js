@@ -113,6 +113,7 @@ module.exports = {
       staffRoleFinal = await guild.roles.create({
         name: "Staff",
         color: "Orange",
+        hoist: true,
         reason: "StudyBot setup command",
       });
     }
@@ -123,6 +124,8 @@ module.exports = {
       studentRole = await guild.roles.create({
         name: "Student",
         color: "Green",
+        hoist: true,
+        mentionable: true,
         reason: "StudyBot setup command",
       });
     }
